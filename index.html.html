@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Questions Coquines — Mini site privé</title>
+<style>
+  body{margin:0;font-family:sans-serif;background:#111;color:#eee;display:flex;justify-content:center;padding:20px}
+  .wrap{max-width:800px;width:100%;background:#222;padding:20px;border-radius:12px}
+  h1{margin:0 0 10px;font-size:22px;text-align:center}
+  .question{font-size:18px;margin:20px 0;min-height:60px}
+  button{padding:10px 14px;margin:4px;border:none;border-radius:8px;background:#ff3366;color:#fff;cursor:pointer;font-weight:700}
+  .meta{margin-top:8px;color:#aaa;font-size:13px}
+  .hidden{display:none}
+  .lock-screen{display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;height:60vh}
+  input.pass{padding:12px;border-radius:10px;border:1px solid #444;background:#222;color:#fff;width:220px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div id="locked" class="lock-screen">
+    <h2>Mini-site privé — Questions Coquines</h2>
+    <p style="color:#aaa;text-align:center">Entrez le code secret pour accéder aux questions. (Code par défaut : <strong>1234</strong>)</p>
+    <input id="pass" class="pass" type="text" placeholder="Code secret" />
+    <div>
+      <button id="unlockBtn">Débloquer</button>
+    </div>
+  </div>
+  <div id="main" class="hidden">
+    <h1>Questions Coquines — Jeu téléphone</h1>
+    <div class="controls">
+      <button id="prevBtn">Précédent</button>
+      <button id="nextBtn">Suivant</button>
+      <button id="randBtn">Au hasard</button>
+    </div>
+    <div class="question" id="questionArea">Appuyez sur Suivant pour commencer.</div>
+    <div class="meta">Question <span id="qIndex">-</span>/50</div>
+  </div>
+</div>
+<script>
+const SECRET_CODE='1234';
+const questions=[
+"Quelle est la chose la plus coquine que tu aies faite en public (ou presque) ?",
+"As-tu déjà eu envie de jouer à des jeux de rôle sexy avec ton/ta partenaire ?",
+"Quelle est ta tenue ou lingerie préférée pour exciter ton/ta partenaire ?",
+"As-tu déjà eu un orgasme en utilisant un accessoire sexy inattendu ?",
+"Quelle est ta position préférée pour des rapports intenses et rapides ?",
+"As-tu déjà utilisé de la nourriture ou des accessoires lors d’un jeu sexuel ?",
+"As-tu déjà été excité(e) par un massage sensuel prolongé ?",
+"Quelle est la chose la plus excitante qu’un partenaire ait faite pour toi au lit ?",
+"Préfères-tu des caresses lentes ou des mouvements rapides et intenses ?",
+"As-tu déjà été excité(e) en regardant ton/ta partenaire se préparer ou se déshabiller ?",
+"Quelle est la partie du corps de ton/ta partenaire que tu aimes le plus toucher ?",
+"As-tu déjà eu un fantasme de sexe sur un lieu interdit mais légal (bureau, ascenseur…) ?",
+"Préfères-tu que ton/ta partenaire prenne le contrôle ou que tu le fasses toi-même ?",
+"Quelle est la chose la plus audacieuse que tu aies dite pendant un moment sexy ?",
+"As-tu déjà fait un strip-tease pour quelqu’un ?",
+"Quelle est la scène de film ou série qui t’a le plus inspiré(e) sexuellement ?",
+"As-tu déjà aimé un jeu de 'domination douce' au lit ?",
+"Quelle est la partie de ton corps que tu aimes le plus que l’on embrasse ou caresse ?",
+"As-tu déjà eu un orgasme prolongé grâce à des préliminaires prolongés ?",
+"Quelle est la chose la plus sensuelle qu’un partenaire ait faite avec ses mains ou sa bouche ?",
+"As-tu déjà eu envie de regarder ton/ta partenaire jouir de manière intense ?",
+"Quelle est la chose la plus coquine que tu aies envoyée par message ou audio ?",
+"Préfères-tu un sexe rapide et intense ou lent et sensuel ?",
+"As-tu déjà eu des pensées sexuelles en pleine journée au travail ou en public ?",
+"Quelle est la partie du corps que tu aimerais que ton/ta partenaire explore plus souvent ?",
+"As-tu déjà joué à un jeu de rôle coquin avec des accessoires (menottes, plumes…) ?",
+"Quelle est la chose la plus excitante que tu aies faite sous la douche ou dans la baignoire ?",
+"As-tu déjà voulu essayer une nouvelle position audacieuse mais pas encore osé ?",
+"Quelle est la sensation qui t’excite le plus (mordillements, léchage, caresses…) ?",
+"As-tu déjà eu un orgasme en te concentrant uniquement sur le plaisir oral ?",
+"Quelle est la chose la plus sensuelle que tu aimerais qu’un/une partenaire fasse avant le sexe ?",
+"As-tu déjà été excité(e) par le fait de savoir que quelqu’un te regardait discrètement ?",
+"Préfères-tu des préliminaires longs ou passer directement à l’action ?",
+"Quelle est la pratique coquine qui te rend le plus vulnérable (mais que tu aimes) ?",
+"As-tu déjà eu des fantasmes sur un jeu de rôle érotique précis (professeur, médecin…) ?",
+"Quelle est la chose la plus sexy que tu aies faite au téléphone ou en audio ?",
+"As-tu déjà eu envie de caresser ton/ta partenaire dans un lieu semi-public légal ?",
+"Quelle est la chose la plus audacieuse que tu aies faite en lingerie ou nue ?",
+"As-tu déjà voulu prolonger le plaisir pendant des heures avec ton/ta partenaire ?",
+"Quelle est la zone du corps que tu aimes le plus caresser avec la bouche ?",
+"As-tu déjà été excité(e) par des chatouilles sensuelles ou légères douleurs ?",
+"Quelle est la chose la plus coquine que tu aies faite en vacances ou en voyage ?",
+"Préfères-tu être surpris(e) ou surprendre ton/ta partenaire ?",
+"As-tu déjà eu un moment sexy où le lieu était légal mais inattendu (balcon, plage…) ?",
+"Quelle est la chose qui te rend le plus fou/folle au moment des préliminaires ?",
+"As-tu déjà eu envie de te laisser complètement guider par ton/ta partenaire ?",
+"Quelle est la sensation la plus excitante que tu aies ressentie au toucher ou aux caresses ?",
+"As-tu déjà fait des jeux coquins avec de la glace, de l’huile ou de la crème ?",
+"Quelle est la position que tu aimerais tester mais que tu n’as pas encore osée ?",
+"As-tu déjà été excité(e) simplement par le regard ou les mots de ton/ta partenaire ?"
+];
+let idx=-1;
+const el=id=>document.getElementById(id);
+function showQuestion(i){if(i<0||i>=questions.length)return;el('questionArea').textContent=questions[i];el('qIndex').textContent=i+1;idx=i;}
+el('nextBtn').addEventListener('click',()=>{showQuestion((idx+1)%questions.length);});
+el('prevBtn').addEventListener('click',()=>{if(idx>0)showQuestion(idx-1);});
+el('randBtn').addEventListener('click',()=>{showQuestion(Math.floor(Math.random()*questions.length));});
+el('unlockBtn').addEventListener('click',()=>{if(el('pass').value.trim()===SECRET_CODE){el('locked').classList.add('hidden');el('main').classList.remove('hidden');showQuestion(0);}else alert('Code incorrect');});
+el('pass').addEventListener('keydown',e=>{if(e.key==='Enter')el('unlockBtn').click();});
+</script>
+</body>
+</html>
